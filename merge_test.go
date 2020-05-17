@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"sort"
 	"testing"
 	"time"
 )
@@ -36,8 +37,15 @@ func TestMerge2Channels(t *testing.T) {
 		}
 	}()
 
+	got := make([]int, n)
+
 	for i := 0; i < n; i++ {
-		if got, expected := <-out, Mul2(i)+Mul2(i); got != expected {
+		got[i] = <-out
+	}
+
+	sort.Sort(sort.IntSlice(got))
+	for i := 0; i < n; i++ {
+		if expected := Mul2(i) + Mul2(i); got[i] != expected {
 			t.Errorf("Expected: %d, got %d", expected, got)
 		}
 	}
