@@ -12,16 +12,18 @@ func Merge2Channels(f func(int) int, in1 <-chan int, in2 <-chan int, out chan<- 
 				x1 = <-in1
 			}
 
-			res1, res2 := make(chan int), make(chan int)
+			go func() {
+				res1, res2 := make(chan int), make(chan int)
 
-			getResult := func(x int, res chan<- int) {
-				res <- f(x)
-			}
+				getResult := func(x int, res chan<- int) {
+					res <- f(x)
+				}
 
-			go getResult(x1, res1)
-			go getResult(x2, res2)
+				go getResult(x1, res1)
+				go getResult(x2, res2)
 
-			out <- <-res1 + <-res2
+				out <- <-res1 + <-res2
+			}()
 		}
 	}()
 }
